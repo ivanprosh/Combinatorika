@@ -6,39 +6,49 @@
 
 using namespace std;
 const int size = 6;
+//структура для хранения номера
 int PhoneNumber[size];
 
 int Num_count = 0;
+
 //массивы предикатов
 typedef bool (*predicat)(int *it1, int *it2);
+//синонимы типам для удобства
 typedef pair<predicat,int*> condition;
 typedef vector<condition>::const_iterator My_iterator;
 
+//функция '='
 bool equal(int *it1, int *it2)
 {
     return *it1==*it2;
 }
+//функция '<'
 bool numless(int *it1, int *it2)
 {
     return (*it1)<(*it2);
 }
+//функция '>'
 bool numhigh(int *it1, int *it2)
 {
     return (*it1)>(*it2);
 }
+//функция '>='
 bool numhighequal(int *it1, int *it2)
 {
     return !numless(it1,it2);
 }
+//функция '<='
 bool numlessequal(int *it1, int *it2)
 {
     return !numhigh(it1,it2);
 }
+//функция '!='
 bool notequal(int *it1, int *it2)
 {
     return !equal(it1,it2);
 }
 
+//чтение из файла
 bool rfile(const string& name, vector<condition>* Vec)
 {
     ifstream file;
@@ -60,8 +70,10 @@ bool rfile(const string& name, vector<condition>* Vec)
             file.putback(c[i]);
             file >> b;
 
-            cout << a << " " << c[0] << " " << c[1] << " Sec chis" << b << endl;
+            cout << a << " " << c[0] << " " << " " << b << endl;
 
+            //в зависимости от того, какой попался символ
+            //<,=,> делаем выбор функций-предикатов
             switch (c[0]) {
             case '<':
                 if(c[1] == '>')
@@ -109,13 +121,6 @@ bool rfile(const string& name, vector<condition>* Vec)
         return 0;
     }
 }
-//void init(vector<condition>* Vec)
-//{
-//    Vec[1].push_back(condition(numhigh,&PhoneNumber[0]));
-//    Vec[2].push_back(condition(equal,&PhoneNumber[0]));
-//    Vec[4].push_back(condition(numless,&PhoneNumber[2]));
-//    //Vec[4].push_back(curEl);
-//}
 
 bool analyze(const vector<condition>& vec,int index)
 {
@@ -123,10 +128,13 @@ bool analyze(const vector<condition>& vec,int index)
         My_iterator it = vec.begin();
         while(it!=vec.end())
         {
+            //проходим по массиву условий для тек. позиции
             if(it->first(&PhoneNumber[index],it->second)) it++;
+            //если условие не выполняется - возвращаем 0
             else return 0;
         }
     }
+    //если пришли сюда - условия выполняются
     return 1;
 }
 
@@ -137,8 +145,11 @@ int main(int argc, char *argv[])
     //время выполнения
     int start = clock();
 
+    //обходим все возможные номера
     for(PhoneNumber[0]=0;PhoneNumber[0]<10;PhoneNumber[0]++)
     {
+        //на каждом уровне проверяем, удовлетворяет ли данная комбинация цифр условиям
+        //если нет, то идем дальше
         if(!analyze(Func[0],0)) continue;
         for(PhoneNumber[1]=0;PhoneNumber[1]<10;PhoneNumber[1]++)
         {
@@ -155,13 +166,12 @@ int main(int argc, char *argv[])
                         for(PhoneNumber[5]=0;PhoneNumber[5]<10;PhoneNumber[5]++)
                         {
                             if(!analyze(Func[5],5)) continue;
+                            //если дошли сюда - значит комбинация удовлетворительная, прибавляем единицу
                             Num_count++;
                         }
                     }
                 }
             }
-            int count = PhoneNumber[1];
-            count = PhoneNumber[1];
         }
     }
     //останов

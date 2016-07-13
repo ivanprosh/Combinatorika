@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     PhoneNumbers \
-    AnswerTest
+    AnswerTest \
+    Rooms

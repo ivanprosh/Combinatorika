@@ -17,44 +17,58 @@ int count_var=0,
 
 void analyze(oneresult *data,oneresult *out)
 {
-    int koeff=0, commonans =0, relball = 0;
+    //коэффициент вероятности успеха,
+    int koeff=0,
+    //число отличий в ответах двух разных испытуемых
+        commonans =0,
+    //разность итоговых баллов двух разных испытуемых
+        relball = 0;
+    //массив битов для операции "Исключающее ИЛИ"
     bitset<1000> cmp(0);
+    //массив вычисления вероятности правильности ответа
     float sucess[1000];
     memset(sucess,0,1000);
+    //для каждой пары испытуемых
     for(int i=0;i<count_var;i++)
     {
       for(int j=i+1;j<count_var;j++)
       {
           commonans = 0;
           koeff = 0;
+          //вычисляем результрующий вектор для
+          //операции "Исключающее ИЛИ"
           cmp = data[i].second ^ data[j].second;
           relball = data[i].first - data[j].first;
-          //cout << "Current cmp:" << endl;
+
           for(int k=0;k<count_ans;k++)
           {
               if(cmp[k])commonans++;
-              //cout << cmp[k] << " ";
           }
-          //cout << endl;
+          //если количество отличий совпадает с разностью баллов
+          //значит можно с полной уверенностью узнать верный ответ
           if(int(abs(relball)) == commonans) koeff = 1000;
           for(int k=0;k<count_ans;k++)
           {
               if(!cmp[k]) continue;
+              //если есть отличия
               if(relball>0)
               {
+                  //если балл первого в паре больше, чем у второго
                   if(data[i].second[k]) sucess[k]+=koeff*relball/commonans;
                   else sucess[k]-=koeff*relball/commonans;
               }
               else if(relball<0)
               {
+                  //если балл первого в паре меньше, чем у второго
                   if(data[j].second[k]) sucess[k]-=koeff*relball/commonans;
                   else sucess[k]+=koeff*relball/commonans;
               }
-              //cout << "sucess[" << k << "] " << sucess[k] << endl;
           }
       }
     }
-    cout << "Screen out:" << endl;
+    //составив сводный массив вероятностей sucess,
+    //можно выдавать рекоммендации по ответам на тест
+    cout << "Answer:" << endl;
     for(int k=0;k<count_ans;k++)
     {
         if(sucess[k]>0) out->second[k] = 1;
@@ -111,14 +125,16 @@ bool rfile(const string& name)
             i++;
         }
         file.close ();
-
-//        for(int i=0;i<count_var;i++)
-//        {
-//           cout << data[i].first << " ";
-//           for(int j=0;j<count_ans;j++)
-//              cout << data[i].second[j] << " ";
-//           cout << endl;
-//        }
+        //вывод на экран входных данных
+        for(int i=0;i<count_var;i++)
+        {
+           cout << data[i].first << " ";
+           for(int j=0;j<count_ans;j++)
+              if(data[i].second[j]) cout << "+" << " ";
+              else cout << "-" << " ";
+           cout << endl;
+        }
+        //анализ входных данных
         analyze(data,out);
 
         return 1;
@@ -133,7 +149,7 @@ int main(int argc, char *argv[])
 {
    //время выполнения
    int start = clock();
-
+   //чтение из файла
    if(!rfile("input.txt")) return 0;
 
    //останов
